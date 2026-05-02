@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پایگاه داده پیشرفته</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg-card: #111827;
+      --bg-card2: #1a2235;
+      --accent: #4f8ef7;
+      --accent2: #a78bfa;
+      --accent3: #34d399;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(79,142,247,0.4);
+      --font: 'Vazirmatn', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,142,247,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      border: 1px solid rgba(79,142,247,0.3);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #e2e8f0 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .meta-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent3);
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    nav::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-btn:hover { color: var(--text); }
+    .nav-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .nav-icon {
+      font-size: 0.95rem;
+    }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .section-header {
+      margin-bottom: 2rem;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .section-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== SYLLABUS ===== */
+    .syllabus-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .syllabus-week {
+      background: var(--bg-card);
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      align-items: center;
+      padding: 1rem 1.4rem;
+      gap: 1rem;
+      transition: background 0.2s;
+    }
+    .syllabus-week:hover { background: var(--bg-card2); }
+    .week-num {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: rgba(79,142,247,0.1);
+      border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 6px;
+      padding: 4px 8px;
+      text-align: center;
+    }
+    .week-topic { font-size: 0.9rem; font-weight: 500; }
+    .week-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .tag {
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+    .tag-exam { background: rgba(167,139,250,0.15); color: #c4b5fd; border: 1px solid rgba(167,139,250,0.2); }
+    .tag-hw { background: rgba(52,211,153,0.12); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2); }
+    .tag-quiz { background: rgba(251,191,36,0.12); color: #fcd34d; border: 1px solid rgba(251,191,36,0.2); }
+
+    /* ===== PDF CARDS ===== */
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .pdf-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .pdf-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .pdf-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .pdf-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .pdf-icon-notes { background: rgba(79,142,247,0.15); }
+    .pdf-icon-hw { background: rgba(52,211,153,0.12); }
+    .pdf-icon-exam { background: rgba(167,139,250,0.15); }
+    .pdf-icon-quiz { background: rgba(251,191,36,0.12); }
+    .pdf-icon-sol { background: rgba(244,114,182,0.12); }
+    .pdf-icon-ref { background: rgba(99,102,241,0.15); }
+    .pdf-title { font-size: 0.9rem; font-weight: 500; }
+    .pdf-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .pdf-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .pdf-size { font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); }
+    .pdf-btn {
+      font-size: 0.72rem;
+      color: var(--accent);
+      display: flex; align-items: center; gap: 4px;
+      font-family: var(--font);
+    }
+
+    /* ===== RESOURCES ===== */
+    .resource-list { display: grid; gap: 0.75rem; }
+    .resource-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .resource-item:hover { border-color: var(--border-hover); }
+    .res-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .res-text { flex: 1; }
+    .res-name { font-size: 0.875rem; font-weight: 500; }
+    .res-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .res-type {
+      font-size: 0.68rem; font-family: var(--mono);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.05);
+      padding: 3px 8px; border-radius: 6px;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; }
+    .empty h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-dim); }
+    .empty p { font-size: 0.85rem; }
+
+    /* ===== UPLOAD INSTRUCTIONS ===== */
+    .upload-box {
+      border: 1px dashed rgba(79,142,247,0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      background: rgba(79,142,247,0.03);
+    }
+    .upload-box h3 { font-size: 0.875rem; font-weight: 500; color: var(--accent); margin-bottom: 0.75rem; }
+    .upload-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
+    .code-path {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      background: rgba(255,255,255,0.06);
+      padding: 2px 7px; border-radius: 5px;
+      color: var(--accent3);
+    }
+
+    /* ===== STATS ===== */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: var(--mono);
+    }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4rem;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 2.5rem 1rem 2rem; }
+      main { padding: 1.5rem 1rem; }
+      .syllabus-week { grid-template-columns: 60px 1fr; }
+      .syllabus-week .tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="badge">CS Graduate Course — نیمسال دوم ۱۴۰۳–۱۴۰۴</div>
+  <h1>پایگاه داده پیشرفته</h1>
+  <p class="hero-sub">دانشگاه — گروه مهندسی کامپیوتر</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-dot"></div>واحد: ۳ واحد نظری</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--accent2)"></div>مقطع: کارشناسی ارشد</div>
+    <div class="meta-item"><div class="meta-dot" style="background:#f472b6"></div>هر هفته به‌روزرسانی می‌شود</div>
+  </div>
+</header>
+
+<!-- ===== NAV ===== -->
+<nav id="mainNav">
+  <button class="nav-btn active" onclick="showSection('syllabus', this)">
+    <span class="nav-icon">📋</span> سرفصل درس
+  </button>
+  <button class="nav-btn" onclick="showSection('notes', this)">
+    <span class="nav-icon">📝</span> یادداشت‌ها
+  </button>
+  <button class="nav-btn" onclick="showSection('assignments', this)">
+    <span class="nav-icon">📚</span> تکالیف
+  </button>
+  <button class="nav-btn" onclick="showSection('solutions', this)">
+    <span class="nav-icon">✅</span> حل تکالیف
+  </button>
+  <button class="nav-btn" onclick="showSection('quizzes', this)">
+    <span class="nav-icon">⚡</span> کوئیزها
+  </button>
+  <button class="nav-btn" onclick="showSection('exams', this)">
+    <span class="nav-icon">🎯</span> امتحانات
+  </button>
+  <button class="nav-btn" onclick="showSection('resources', this)">
+    <span class="nav-icon">🔗</span> منابع
+  </button>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main>
+
+  <!-- SYLLABUS -->
+  <section id="syllabus" class="section active">
+    <div class="section-header">
+      <h2 class="section-title">سرفصل درس</h2>
+      <p class="section-desc">برنامه هفتگی و موضوعات درس در طول ترم</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent)">16</div>
+        <div class="stat-lbl">هفته درس</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent3)">6</div>
+        <div class="stat-lbl">تکلیف</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#fcd34d">8</div>
+        <div class="stat-lbl">کوئیز</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent2)">2</div>
+        <div class="stat-lbl">امتحان</div>
+      </div>
+    </div>
+
+    <div class="syllabus-grid">
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱</span>
+        <div>
+          <div class="week-topic">مقدمه و مرور مدل رابطه‌ای</div>
+          <div class="week-sub">SQL پیشرفته، نرمال‌سازی، معماری DBMS</div>
+        </div>
+        <span></span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۲</span>
+        <div>
+          <div class="week-topic">ذخیره‌سازی و ساختارهای فایل</div>
+          <div class="week-sub">Buffer management، Heap files، Sorted files</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۱</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۳</span>
+        <div>
+          <div class="week-topic">ایندکس‌گذاری — B+ Tree</div>
+          <div class="week-sub">درج، حذف، جستجو در B+ Tree</div>
+        </div>
+        <span class="tag tag-quiz">کوئیز ۱</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۴</span>
+        <div>
+          <div class="week-topic">ایندکس‌گذاری — Hash Index</div>
+          <div class="week-sub">Static Hashing، Extendible Hashing، Linear Hashing</div>
+        </div>
+        <span></span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۵</span>
+        <div>
+          <div class="week-topic">پردازش پرس‌وجو — مرتب‌سازی</div>
+          <div class="week-sub">External Merge Sort، Two-Pass Algorithms</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۲</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۶</span>
+        <div>
+          <div class="week-topic">پردازش پرس‌وجو — Join</div>
+          <div class="week-sub">Nested Loop، Sort-Merge، Hash Join</div>
+        </div>
+        <span class="tag tag-quiz">کوئیز ۲</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۷</span>
+        <div>
+          <div class="week-topic">بهینه‌سازی پرس‌وجو</div>
+          <div class="week-sub">Query rewriting، Cost estimation، Plan enumeration</div>
+        </div>
+        <span></span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۸</span>
+        <div>
+          <div class="week-topic">امتحان میانترم</div>
+          <div class="week-sub">پوشش هفته‌های ۱ تا ۷</div>
+        </div>
+        <span class="tag tag-exam">امتحان</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۹</span>
+        <div>
+          <div class="week-topic">مدیریت تراکنش — مقدمه</div>
+          <div class="week-sub">ACID properties، Concurrency control</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۳</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۰</span>
+        <div>
+          <div class="week-topic">قفل‌گذاری و سریال‌پذیری</div>
+          <div class="week-sub">2PL، Lock-based protocols، Deadlock</div>
+        </div>
+        <span class="tag tag-quiz">کوئیز ۳</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۱</span>
+        <div>
+          <div class="week-topic">بازیابی از خرابی</div>
+          <div class="week-sub">WAL، ARIES Algorithm، Checkpoint</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۴</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۲</span>
+        <div>
+          <div class="week-topic">پایگاه داده توزیع‌شده</div>
+          <div class="week-sub">Distributed transactions، 2PC، CAP theorem</div>
+        </div>
+        <span class="tag tag-quiz">کوئیز ۴</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۳</span>
+        <div>
+          <div class="week-topic">پایگاه داده NoSQL</div>
+          <div class="week-sub">Document، Key-Value، Column-family، Graph DB</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۵</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۴</span>
+        <div>
+          <div class="week-topic">پردازش تحلیلی OLAP و Data Warehouse</div>
+          <div class="week-sub">Star schema، Columnar storage، HTAP</div>
+        </div>
+        <span class="tag tag-quiz">کوئیز ۵</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۵</span>
+        <div>
+          <div class="week-topic">موضوعات پیشرفته</div>
+          <div class="week-sub">Temporal DB، Graph processing، ML in DB</div>
+        </div>
+        <span class="tag tag-hw">تکلیف ۶</span>
+      </div>
+      <div class="syllabus-week">
+        <span class="week-num">هفته ۱۶</span>
+        <div>
+          <div class="week-topic">جمع‌بندی و مرور ترم</div>
+          <div class="week-sub">بررسی مفاهیم کلیدی و آمادگی برای امتحان پایانی</div>
+        </div>
+        <span class="tag tag-exam">امتحان پایانی</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section id="notes" class="section">
+    <div class="section-header">
+      <h2 class="section-title">یادداشت‌های درس</h2>
+      <p class="section-desc">اسلایدها و یادداشت‌های جلسات درس به فرمت PDF</p>
+    </div>
+
+    <div class="upload-box">
+      <h3>📂 نحوه افزودن فایل‌های PDF</h3>
+      <p>
+        فایل‌های PDF یادداشت‌ها را در پوشه <span class="code-path">notes/</span> قرار دهید.<br>
+        سپس آرایه <span class="code-path">notesData</span> در فایل <span class="code-path">data.js</span> را ویرایش کنید.<br>
+        نام‌گذاری پیشنهادی: <span class="code-path">lecture-01-intro.pdf</span>، <span class="code-path">lecture-02-storage.pdf</span> و…
+      </p>
+    </div>
+
+    <div class="pdf-grid" id="notesGrid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- ASSIGNMENTS -->
+  <section id="assignments" class="section">
+    <div class="section-header">
+      <h2 class="section-title">تکالیف</h2>
+      <p class="section-desc">صورت تکالیف و مهلت تحویل</p>
+    </div>
+    <div class="pdf-grid" id="assignmentsGrid"></div>
+  </section>
+
+  <!-- SOLUTIONS -->
+  <section id="solutions" class="section">
+    <div class="section-header">
+      <h2 class="section-title">حل تکالیف</h2>
+      <p class="section-desc">پاسخ‌نامه رسمی تکالیف پس از تحویل</p>
+    </div>
+    <div class="pdf-grid" id="solutionsGrid"></div>
+  </section>
+
+  <!-- QUIZZES -->
+  <section id="quizzes" class="section">
+    <div class="section-header">
+      <h2 class="section-title">کوئیزها</h2>
+      <p class="section-desc">کوئیزهای کلاسی و آنلاین</p>
+    </div>
+    <div class="pdf-grid" id="quizzesGrid"></div>
+  </section>
+
+  <!-- EXAMS -->
+  <section id="exams" class="section">
+    <div class="section-header">
+      <h2 class="section-title">امتحانات</h2>
+      <p class="section-desc">سوالات امتحان میانترم و پایانی</p>
+    </div>
+    <div class="pdf-grid" id="examsGrid"></div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section id="resources" class="section">
+    <div class="section-header">
+      <h2 class="section-title">منابع درس</h2>
+      <p class="section-desc">کتاب‌های درسی، مقالات و لینک‌های مفید</p>
+    </div>
+
+    <div class="resource-list" id="resourcesList">
+      <a class="resource-item" href="https://www.db-book.com" target="_blank">
+        <div class="res-icon" style="background:rgba(79,142,247,0.15)">📖</div>
+        <div class="res-text">
+          <div class="res-name">Database System Concepts — Silberschatz et al. (7th ed.)</div>
+          <div class="res-desc">کتاب اصلی درس — پوشش کامل مباحث پایه تا پیشرفته</div>
+        </div>
+        <span class="res-type">کتاب</span>
+      </a>
+      <a class="resource-item" href="https://www.redbook.io" target="_blank">
+        <div class="res-icon" style="background:rgba(239,68,68,0.12)">📕</div>
+        <div class="res-text">
+          <div class="res-name">Readings in Database Systems (Red Book) — Bailis, Hellerstein</div>
+          <div class="res-desc">مجموعه مقالات کلاسیک و مدرن پایگاه داده — رایگان آنلاین</div>
+        </div>
+        <span class="res-type">کتاب</span>
+      </a>
+      <a class="resource-item" href="https://dsf.berkeley.edu/cs186/" target="_blank">
+        <div class="res-icon" style="background:rgba(251,191,36,0.12)">🎓</div>
+        <div class="res-text">
+          <div class="res-name">CS186 Berkeley — Introduction to Database Systems</div>
+          <div class="res-desc">درس مرجع دانشگاه برکلی با ویدیوها و مطالب آموزشی کامل</div>
+        </div>
+        <span class="res-type">درس آنلاین</span>
+      </a>
+      <a class="resource-item" href="https://15445.courses.cs.cmu.edu" target="_blank">
+        <div class="res-icon" style="background:rgba(167,139,250,0.15)">🏫</div>
+        <div class="res-text">
+          <div class="res-name">CMU 15-445 — Database Systems</div>
+          <div class="res-desc">درس Andy Pavlo در CMU — اسلایدها و ویدیوهای درس موجود است</div>
+        </div>
+        <span class="res-type">درس آنلاین</span>
+      </a>
+      <a class="resource-item" href="https://dl.acm.org/journal/tods" target="_blank">
+        <div class="res-icon" style="background:rgba(52,211,153,0.12)">📄</div>
+        <div class="res-text">
+          <div class="res-name">ACM Transactions on Database Systems (TODS)</div>
+          <div class="res-desc">مجله معتبر علمی — آخرین پژوهش‌های حوزه پایگاه داده</div>
+        </div>
+        <span class="res-type">مجله</span>
+      </a>
+      <a class="resource-item" href="https://vldb.org/pvldb/" target="_blank">
+        <div class="res-icon" style="background:rgba(99,102,241,0.15)">🔬</div>
+        <div class="res-text">
+          <div class="res-name">Proceedings of the VLDB Endowment</div>
+          <div class="res-desc">مقالات کنفرانس VLDB — معتبرترین کنفرانس پایگاه داده</div>
+        </div>
+        <span class="res-type">کنفرانس</span>
+      </a>
+      <a class="resource-item" href="https://postgresql.org/docs" target="_blank">
+        <div class="res-icon" style="background:rgba(29,158,117,0.12)">🐘</div>
+        <div class="res-text">
+          <div class="res-name">PostgreSQL Documentation</div>
+          <div class="res-desc">مستندات رسمی PostgreSQL — مرجع پیاده‌سازی عملی</div>
+        </div>
+        <span class="res-type">مستندات</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>پایگاه داده پیشرفته · گروه مهندسی کامپیوتر · نیمسال دوم ۱۴۰۳–۱۴۰۴</p>
+  <p style="margin-top:6px;font-size:0.72rem;color:rgba(100,116,139,0.6)">GitHub Pages · آخرین بروزرسانی: <span id="lastUpdate"></span></p>
+</footer>
+
+<script>
+// ==========================================
+// DATA — ویرایش این بخش برای افزودن فایل‌ها
+// ==========================================
+const notesData = [
+  { title: "جلسه ۱: مقدمه و مرور مدل رابطه‌ای", date: "۱۵ بهمن", file: "notes/lecture-01-intro.pdf", pages: "—" },
+  { title: "جلسه ۲: ذخیره‌سازی و ساختارهای فایل", date: "۲۲ بهمن", file: "notes/lecture-02-storage.pdf", pages: "—" },
+  { title: "جلسه ۳: ایندکس‌گذاری — B+ Tree", date: "۲۹ بهمن", file: "notes/lecture-03-btree.pdf", pages: "—" },
+  { title: "جلسه ۴: ایندکس‌گذاری — Hash", date: "۶ اسفند", file: "notes/lecture-04-hash.pdf", pages: "—" },
+  { title: "جلسه ۵: پردازش پرس‌وجو — مرتب‌سازی", date: "۱۳ اسفند", file: "notes/lecture-05-sorting.pdf", pages: "—" },
+  { title: "جلسه ۶: پردازش پرس‌وجو — Join", date: "۲۰ اسفند", file: "notes/lecture-06-join.pdf", pages: "—" },
+  { title: "جلسه ۷: بهینه‌سازی پرس‌وجو", date: "۴ فروردین", file: "notes/lecture-07-optimization.pdf", pages: "—" },
+  { title: "جلسه ۸: مدیریت تراکنش", date: "۱۱ فروردین", file: "notes/lecture-08-transactions.pdf", pages: "—" },
+  { title: "جلسه ۹: قفل‌گذاری و سریال‌پذیری", date: "۱۸ فروردین", file: "notes/lecture-09-locking.pdf", pages: "—" },
+  { title: "جلسه ۱۰: بازیابی از خرابی", date: "۲۵ فروردین", file: "notes/lecture-10-recovery.pdf", pages: "—" },
+  { title: "جلسه ۱۱: پایگاه داده توزیع‌شده", date: "۱ اردیبهشت", file: "notes/lecture-11-distributed.pdf", pages: "—" },
+  { title: "جلسه ۱۲: پایگاه داده NoSQL", date: "۸ اردیبهشت", file: "notes/lecture-12-nosql.pdf", pages: "—" },
+];
+
+const assignmentsData = [
+  { title: "تکلیف ۱: ذخیره‌سازی و ساختارهای فایل", date: "مهلت: ۲۹ بهمن", file: "assignments/hw1.pdf", pages: "—" },
+  { title: "تکلیف ۲: B+ Tree و Hash Index", date: "مهلت: ۱۳ اسفند", file: "assignments/hw2.pdf", pages: "—" },
+  { title: "تکلیف ۳: پردازش و بهینه‌سازی پرس‌وجو", date: "مهلت: ۴ فروردین", file: "assignments/hw3.pdf", pages: "—" },
+  { title: "تکلیف ۴: مدیریت تراکنش و قفل‌گذاری", date: "مهلت: ۲۵ فروردین", file: "assignments/hw4.pdf", pages: "—" },
+  { title: "تکلیف ۵: پایگاه داده توزیع‌شده", date: "مهلت: ۱۵ اردیبهشت", file: "assignments/hw5.pdf", pages: "—" },
+  { title: "تکلیف ۶: NoSQL و موضوعات پیشرفته", date: "مهلت: ۲۹ اردیبهشت", file: "assignments/hw6.pdf", pages: "—" },
+];
+
+const solutionsData = [
+  { title: "حل تکلیف ۱", date: "منتشر: ۱ اسفند", file: "solutions/sol1.pdf", pages: "—" },
+  { title: "حل تکلیف ۲", date: "منتشر: ۲۰ اسفند", file: "solutions/sol2.pdf", pages: "—" },
+  { title: "حل تکلیف ۳", date: "منتشر: ۱۱ فروردین", file: "solutions/sol3.pdf", pages: "—" },
+];
+
+const quizzesData = [
+  { title: "کوئیز ۱: B+ Tree", date: "۲۹ بهمن", file: "quizzes/quiz1.pdf", pages: "—" },
+  { title: "کوئیز ۲: Hash Index", date: "۶ اسفند", file: "quizzes/quiz2.pdf", pages: "—" },
+  { title: "کوئیز ۳: Join Algorithms", date: "۲۰ اسفند", file: "quizzes/quiz3.pdf", pages: "—" },
+  { title: "کوئیز ۴: Query Optimization", date: "۴ فروردین", file: "quizzes/quiz4.pdf", pages: "—" },
+];
+
+const examsData = [
+  { title: "امتحان میانترم", date: "هفته هشتم", file: "exams/midterm.pdf", pages: "—" },
+  { title: "امتحان پایانی", date: "هفته شانزدهم", file: "exams/final.pdf", pages: "—" },
+];
+
+// ==========================================
+// RENDER
+// ==========================================
+const iconMap = { notes: "📝", hw: "📚", sol: "✅", quiz: "⚡", exam: "🎯" };
+const iconBgMap = { notes: "pdf-icon-notes", hw: "pdf-icon-hw", sol: "pdf-icon-sol", quiz: "pdf-icon-quiz", exam: "pdf-icon-exam" };
+
+function renderCards(data, gridId, type) {
+  const grid = document.getElementById(gridId);
+  if (!data.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📂</div><h3>هنوز فایلی بارگذاری نشده</h3><p>فایل‌های PDF را به ریپازیتوری اضافه کنید و آرایه data را به‌روز کنید.</p></div>`;
+    return;
+  }
+  grid.innerHTML = data.map(item => `
+    <a class="pdf-card" href="${item.file}" target="_blank">
+      <div class="pdf-card-top">
+        <div class="pdf-icon ${iconBgMap[type]}">${iconMap[type]}</div>
+        <div>
+          <div class="pdf-title">${item.title}</div>
+          <div class="pdf-meta">${item.date}</div>
+        </div>
+      </div>
+      <div class="pdf-footer">
+        <span class="pdf-size">PDF</span>
+        <span class="pdf-btn">دانلود ↓</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+renderCards(notesData, 'notesGrid', 'notes');
+renderCards(assignmentsData, 'assignmentsGrid', 'hw');
+renderCards(solutionsData, 'solutionsGrid', 'sol');
+renderCards(quizzesData, 'quizzesGrid', 'quiz');
+renderCards(examsData, 'examsGrid', 'exam');
+
+// NAV
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Date
+document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('fa-IR');
+</script>
+
+</body>
+</html>
